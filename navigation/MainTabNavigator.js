@@ -1,7 +1,7 @@
-import React from 'react';
-import { Platform } from 'react-native';
+import * as React from 'react';
+import {Alert, AsyncStorage, Linking, Platform, TouchableOpacity} from 'react-native';
 import { Text, View, SafeAreaView, ScrollView, Image } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import {createAppContainer} from 'react-navigation';
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -21,6 +21,12 @@ import ResourceDetailScreen from '../screens/activities/resources/ResourceDetail
 import RenderPdfScreen from '../screens/activities/resources/RenderPDF';
 import RenderDownloadedFile from '../screens/activities/download/RenderFile';
 import Setting from "../constants/Setting";
+import LoginScreen from "../screens/LoginScreen";
+import AuthStackNavigator from './AuthStackNavigator';
+import SignupScreen from "../screens/SignupScreen";
+import {t} from "i18next";
+import * as Updates from "expo-updates";
+
 
 const CustomDrawerComponent = (props) => (
   <ScrollView>
@@ -29,11 +35,11 @@ const CustomDrawerComponent = (props) => (
         <Image source={ require('../assets/images/logo.png') }></Image>
       </View>
       <DrawerItems { ...props } style={{ writingDirection: 'rtl', textAlign: 'right' }} labelStyle={{ textAlign: 'right' }} />
+        <TouchableOpacity onPress={ Feed }><Text style={{ color:'#222' , textAlign: 'left', fontWeight: 'bold',  marginLeft: 16, marginTop: 8}}> {t('Log Out')} </Text></TouchableOpacity>
     </SafeAreaView>
-
-    <View style={{ flex: 1, marginTop: 400 }}>
+    <View style={{ flex: 1, marginTop: 250 }}>
       <Text style={{ textAlign: 'center' }}>
-        DDL APP VERSION 1.0 {'\n'} COPYRIGHT &copy; DarakhtDanesh
+        DDL APP VERSION 1.0 {'\n'} COPYRIGHT &copy; Darakht-e Danesh
       </Text>
     </View>
 
@@ -254,8 +260,57 @@ SettingsStack.navigationOptions = ({ screenProps: { t } }) => ({
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-settings' : 'md-settings'} />
   ),
 });
-
 SettingsStack.path = '';
+
+const LoginStack = createStackNavigator(
+    {
+        Login: {
+            screen: LoginScreen,
+        },
+        Signup: {
+            screen: SignupScreen,
+        }
+    },{
+    headerMode: 'none',
+}
+);
+
+
+LoginStack.navigationOptions = ({ screenProps: { t } }) => ({
+    drawerLabel: t('Sign In') +' / '+ t('Register')
+});
+
+
+function Feed() {
+    AsyncStorage.getItem('loginState').then( async (data) => {
+        if (data === 'skipped') {
+            Alert.alert(
+                t("Log Out"),
+                t("You are not signed in to any account!"),
+                [{ text: t("Close"), onPress: () => {} }]
+            );
+        }
+        if (data === 'signedIn') {
+            AsyncStorage.getItem('user').then( async (user) => {
+                Alert.alert(
+                    t("Log Out"),
+                    t("You are signed in as ")+user+ t(', do you want to logout?'),
+                    [{ text: t("Yes"), onPress: async () => {
+                            await AsyncStorage.removeItem('user');
+                            await AsyncStorage.removeItem('token');
+                            await AsyncStorage.removeItem('loginState');
+                            await Updates.reloadAsync();
+                        } },
+                        { text: t("No"), onPress: () => {} }]
+                );
+            })
+        }
+    } )
+
+}
+
+LoginStack.path = '';
+
 
 const tabNavigator = createBottomTabNavigator({ 
   HomeStack,
@@ -276,6 +331,7 @@ const tabNavigator = createBottomTabNavigator({
   }
 });
 
+
 const Drawer = createDrawerNavigator({
   view:{
     screen: tabNavigator,
@@ -289,9 +345,12 @@ const Drawer = createDrawerNavigator({
   LinksStack,
   NewsStack,
   SettingsStack,
+  LoginStack,
 },{
   contentComponent: CustomDrawerComponent,
   //drawerPosition: (Setting.language != 'en') ? 'right' : 'left',
 });
+
+
 
 export default createAppContainer(Drawer);

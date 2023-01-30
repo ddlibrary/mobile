@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import {View, Text, Image, StyleSheet, ScrollView, Dimensions, NativeEventEmitter, NativeModules} from 'react-native';
 import WebView from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import HTML from 'react-native-render-html';
@@ -9,11 +9,15 @@ import { AsyncStorage } from 'react-native';
 import Setting from '../../../constants/Setting';
 import PdfReader from '../../../src';
 
+import * as IntentLauncher from 'expo-intent-launcher';
+
 export default class RenderPDF extends Component {
 
   render(){
-
+    let { t, i18n} = this.props.screenProps;
+    this.eventEmitter = new NativeEventEmitter(NativeModules.RNReactNativeDocViewer);
     const res = this.props.navigation.getParam('data');
+    console.log(res);
     RenderPDF.navigationOptions = {
       title: this.props.navigation.getParam('title'),
       headerRight: (
@@ -23,9 +27,7 @@ export default class RenderPDF extends Component {
       )
     };
 
-    this.props.navigation.navigate({
-      params: {data: res, title: this.props.navigation.getParam('title')}
-    })
+
 
 
 
@@ -71,7 +73,7 @@ export default class RenderPDF extends Component {
            }
 
            if (fileExists)
-             alert("Resource already downloaded!");
+             alert( t("Resource already downloaded!") );
 
            else
              initDownload();
@@ -87,7 +89,7 @@ export default class RenderPDF extends Component {
 
     let initDownload = () => {
 
-      alert('Download Started!');
+      alert( t('Download Started!') );
       FileSystem.downloadAsync(
           Setting.FileApi + res.resource_id,
         FileSystem.documentDirectory + res.file_name
@@ -95,10 +97,10 @@ export default class RenderPDF extends Component {
       .then(({ uri }) => {
         console.log('Finished downloading to ', uri);
         storeData(uri);
-        alert('Resource Downloaded!');
+        alert( t('Resource Downloaded!') );
       })
       .catch(error => {
-          alert('Resource Can not be Downloaded! ' + error);
+          alert( t('Resource Can not be Downloaded! ' + error) );
       });
     }
     if(res.file_mime == 'application/pdf')
@@ -119,7 +121,25 @@ export default class RenderPDF extends Component {
           }}
         />
       )
-    } else {
+    }if(res.file_mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || res.file_mime == 'application/msword')
+    {
+      return(
+          <WebView
+              source={
+                (res.file_name) ?
+                    { uri: 'https://docs.google.com/viewerng/viewer?url=' + Setting.FileApi + res.resource_id } :
+                    { html: '<h1 align="center">file not available!</h1>' }
+              }
+              scalesPageToFit={true}
+              bounces={true}
+              scrollEnabled={true}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              injectedJavaScript={ 'document.getElementsByClassName("ndfHFb-c4YZDc-Wrql6b")[0].remove();' +
+                  'const meta = document.createElement(\'meta\'); meta.setAttribute(\'content\', \'width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=0\'); meta.setAttribute(\'name\', \'viewport\'); document.getElementsByTagName(\'head\')[0].appendChild(meta);'}
+          />
+      )
+    }else {
       return(
         <WebView 
           source={

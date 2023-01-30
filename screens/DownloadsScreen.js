@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, AsyncStorage, RefreshControl } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { FontAwesome } from '@expo/vector-icons';
+import RenderFile from "./activities/download/RenderFile";
 
 export default class DownloadsScreen extends Component {
 
@@ -79,7 +80,8 @@ export default class DownloadsScreen extends Component {
         <View>
           <TouchableOpacity 
             style={styles.option}
-            onPress={ () => { this.props.navigation.navigate('RenderFile', { data: item, title: item.title }) }}>
+            onPress={ () => { this.props.navigation.navigate('RenderFile', { data: item, title: item.title }); RenderFile.navigationOptions = {
+              title: item.title}; }}>
   
             <View style={{ flexDirection: (i18n.language != 'en') ? 'row-reverse' : 'row' }}>
               <View style={styles.optionIconContainer}>

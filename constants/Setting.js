@@ -1,12 +1,6 @@
 
 import { AsyncStorage } from 'react-native';
-const mainUrl = 'https://darakhtdanesh.org/'
-//const mainUrl = 'http://127.0.0.1/ddl/'
-//const mainUrl = 'http://localhost/ddl/'
-//const mainUrl = 'http://192.168.1.122/ddl/'
-//const mainUrl = 'http://192.168.0.115/ddl/'
-//const mainUrl = 'http://192.168.137.111/ddl/'
-//const mainUrl = 'http://172.20.10.3/ddl/'
+const mainUrl = 'https://library.darakhtdanesh.org/'
 
 export default {
   mainUrl,
@@ -22,13 +16,8 @@ export default {
   resourceCategories: mainUrl + 'api/resource_categories/',
   featuredResources: mainUrl + 'api/featured_resources/',
   linksApi: mainUrl + 'api/links/',
-<<<<<<< HEAD
-  newsApi: mainUrl + 'api/news/',
-  pageApi: mainUrl + 'api/page/',
-};
-=======
   newsApi: mainUrl + 'api/news_list/',
   pageApi: mainUrl + 'api/page_view/',
   FileApi: mainUrl + 'api/resource/getFile/',
 };
->>>>>>> 3f3dd86 (all bug fixed)
+

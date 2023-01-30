@@ -60,6 +60,9 @@
         "File Name":"File Name",
         "File Size":"File Size",
         "Comments":"Comments",
-        "comment(s) so far":"comment(s) so far"
+        "comment(s) so far":"comment(s) so far",
+        "No Comment": "No Comment",
+        "Can not open": "Can not open document!",
+        "Open with" : "Open with another app"
     }
 }

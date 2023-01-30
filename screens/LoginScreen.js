@@ -14,7 +14,7 @@ import {
     AsyncStorage,
     Alert
 } from 'react-native';
-import { Updates } from 'expo';
+import * as Updates from 'expo-updates';
 
 import Setting from '../constants/Setting';
 export default class LoginScreen extends Component {
@@ -36,7 +36,7 @@ export default class LoginScreen extends Component {
     {
         try {
             AsyncStorage.setItem('loginState', state);
-            Updates.reload();
+            Updates.reloadAsync();
         } catch (error) {
             console.log(error);
         }
@@ -47,7 +47,7 @@ export default class LoginScreen extends Component {
         let formdata = new FormData();
         formdata.append('email',this.state.email);
         formdata.append('password',this.state.password);
-        formdata.append('device_name',this.state.device_name);
+        formdata.append('device_name',this.state.password);
 
         // connected with my local server for development
 
@@ -123,7 +123,6 @@ export default class LoginScreen extends Component {
                 paddingLeft: 15,
                 paddingRight: 15,
                 marginBottom: 20,
-                textAlign: (i18n.language != 'en') ? 'right' : 'left'
             },
 
             btn: {
@@ -171,9 +170,9 @@ export default class LoginScreen extends Component {
                 behavior={Platform.OS == "ios" ? "padding" : "height"}
                 style={styles.container} >
 
-                <View style={styles.skipButton}>
-                    <Button color={'#333'} title={t("Skip")} onPress={() => { this.setLoginStatus('skipped') }} />
-                </View>
+                <TouchableOpacity style={styles.skipButton} onPress={() => { this.setLoginStatus('skipped') }}>
+                    <Text style={{ color: '#fff', marginRight:10 }}> {t('Skip')} </Text>
+                </TouchableOpacity>
 
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.inner}>

@@ -20,7 +20,6 @@ export default class ResourceDetail extends Component {
   }
 
   getData = async() => {
-    console.log('Link: ' + Setting.resourceApi + this.props.navigation.getParam('id'));
     await fetch(Setting.resourceApi + this.props.navigation.getParam('id'))
         .then(data => data.json())
         .then(res => {
@@ -60,10 +59,9 @@ export default class ResourceDetail extends Component {
       },
       text:{
         marginTop: 10,
-        textAlign: 'justify',
         color: 'grey',
         fontSize: (i18n.language != 'en') ? 11 : 13,
-        writingDirection: (i18n.language != 'en') ? 'rtl' : 'ltr',
+        textAlign: (i18n.language != 'en') ? 'right' : 'left',
       },
       textWhite:{
         marginTop: 10,
@@ -82,10 +80,10 @@ export default class ResourceDetail extends Component {
       },
       userContainer:{
         backgroundColor: '#eee',
-        padding: 10,
+        padding: 20,
+        marginBottom:20,
         borderRadius: 15,
         marginTop: 10,
-        marginLeft: 30,
       },
       userTxt:{
 
@@ -207,8 +205,10 @@ export default class ResourceDetail extends Component {
               routeName: 'RenderPDF',
               key: this.props.navigation.getParam('title'),
               params: {data: attachment, title: this.props.navigation.getParam('title')}
-            })
-
+            });
+            RenderPDF.navigationOptions = {
+              title:this.props.navigation.getParam('title')
+            }
           }
           }>
             <FontAwesome.Button name={ fileType } backgroundColor="#9C6C1F" size={20}>
@@ -218,31 +218,40 @@ export default class ResourceDetail extends Component {
       )
     })
 
-    let comments = this.state.data.comments.map((comment, key) => {
-      return(
-          <TouchableOpacity key={key} style={styles.userContainer}>
+    let comments = (
+        <View>
+          <Text style={ styles.text }> { t('No Comment') } </Text>
+        </View>
+    )
 
-            <View style={[styles.user]}>
-              <Ionicons name="md-person" size={22} color="#777" />
-              <Text style={[styles.iconTxt, { color:'#777' }]}>{ comment.username }</Text>
+    if(this.state.data.comments.length>0){
+       comments = this.state.data.comments.map((comment, key) => {
+        return(
+            <View key={key} style={styles.userContainer}>
+
+              <View style={[styles.user]}>
+                <Ionicons name="md-person" size={22} color="#777" />
+                <Text style={[styles.iconTxt, { color:'#777' }]}>{ comment.username }</Text>
+              </View>
+              <Text style={ styles.text }> { comment.comment } </Text>
             </View>
-            <Text style={ styles.text }> { comment.comment } </Text>
-          </TouchableOpacity>
-      )
-    })
+        )
+      })
+    }
+
 
     return(
         <ScrollView>
           <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View style={ {paddingBottom: 30} }>
+              <View>
 
                 <View style={styles.shadow}>
                   <Image style={styles.coverPhoto} source={{uri: img }} />
                 </View>
 
                 <View style={styles.iconsContainer}>
-                  <TouchableOpacity style={styles.iconBtn} onPress={()=>{alert('clicked')}}>
+                  <TouchableOpacity style={styles.iconBtn} >
                     <View style={[styles.icons, {width: 80}]}>
                       <Ionicons name="ios-eye" size={26} color="#FFA800" />
                       <Text style={styles.iconTxt}>{ this.state.data.views }</Text>

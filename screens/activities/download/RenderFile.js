@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import WebView from 'react-native-webview';
 import * as FileSystem from 'expo-file-system';
 import HTML from 'react-native-render-html';
@@ -8,69 +8,15 @@ import { AsyncStorage } from 'react-native';
 
 import Setting from '../../../constants/Setting';
 import PdfReader from '../../../src';
+import * as IntentLauncher from "expo-intent-launcher";
+import {t} from "i18next";
 
 export default class RenderFile extends Component {
   render(){
 
     const res = this.props.navigation.getParam('data');
-    RenderFile.navigationOptions = {
-      title: this.props.navigation.getParam('title')
-    };
 
-    let storeData = async () => {
-      try {
 
-        let resourceData = {
-          title: this.props.navigation.getParam('title'),
-          file_name: res.file_name,
-          file_type: res.file_type,
-          file_mime: res.file_mime,
-          resource_id: res.resource_id,
-          id:res.id
-        };
-
-        const existingResources = await AsyncStorage.getItem('resources');
-
-        let resources = JSON.parse(existingResources);
-        if( !resources ){
-          resources = []
-        }
-
-        resources.push( resourceData )
-
-        await AsyncStorage.setItem('resources', JSON.stringify(resources));
-      } catch (error) {
-        // Error saving data
-      }
-    };
-
-    let retrieveData = async () => {
-      try {
-        const value = await AsyncStorage.getItem('resources');
-        if (value !== null) {
-          // We have data!!
-          console.log(value);
-          console.log(FileSystem.getInfoAsync(FileSystem.documentDirectory + res.file_name) );
-        }
-      } catch (error) {
-        // Error retrieving data
-      }
-    };
-
-    const downloadResource = () => {
-      FileSystem.downloadAsync(
-          Setting.FileApi + res.resource_id,
-        FileSystem.documentDirectory + res.file_name
-      )
-      .then(({ uri }) => {
-        //console.log('Finished downloading to ', uri);
-        storeData();
-        alert('Resource Downloaded!');
-      })
-      .catch(error => {
-          console.error(error);
-      });
-    }
 
     if(res.file_mime == 'application/pdf')
     {
@@ -90,11 +36,29 @@ export default class RenderFile extends Component {
             }}
           />
       )
-    } else { 
+    }
+      if(res.file_mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'){
+        return (
+            <View style={ {paddingTop: 20} }>
+                <Text style={ styles.TextSlim }> {t('Can not open')} </Text>
+                <TouchableOpacity style={ styles.btnPrimary } onPress={ () => {
+                    FileSystem.getContentUriAsync(res.uri).then(cUri => {
+                    IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+                        data: cUri,
+                        flags: 1,
+                    });
+                });
+                } }>
+                    <Ionicons name='open' color={'#da7437'} size={22} style={{  textAlign:'center' }}></Ionicons>
+                    <Text style={ styles.TextLarge }>{t('Open with')}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+      }else {
         return(
-          <WebView 
+          <WebView
             source={
-              (res.file_name) ? 
+              (res.file_name) ?
               {  uri: Setting.FileApi + res.resource_id } :
               { html: '<h1 align="center">file not available!</h1>' }
             }
@@ -117,4 +81,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     writingDirection: (Setting.language != 'en') ? 'rtl' : 'ltr',
   },
+    btnPrimary: {
+        borderRadius: 35,
+        paddingVertical: 15,
+        marginBottom: 20
+    },
+
+    TextSlim: {
+        textAlign: 'center',
+        fontWeight: 'normal'
+    },
+
+    TextLarge: {
+        textAlign: 'center',
+        color: '#da7437',
+        fontWeight: 'bold',
+        fontSize:22
+    },
 });

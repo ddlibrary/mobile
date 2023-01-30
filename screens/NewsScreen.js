@@ -46,7 +46,10 @@ export default class NewsScreen extends React.Component {
       <View>
         <TouchableOpacity 
           style={styles.option}
-          onPress={ () => {  navigate('NewsView', item) }}>
+          onPress={ () => {  navigate('NewsView', item);
+            NewsView.navigationOptions = {
+            title: item.title,
+          }; }}>
 
           <View style={{ flexDirection: (this.props.screenProps.i18n.language != 'en') ? 'row-reverse' : 'row' }}>
             <View style={styles.optionIconContainer}>

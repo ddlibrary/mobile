@@ -174,9 +174,9 @@ export default class HomeScreen extends Component {
               <Text style={ styles.subTitle}>{ t('Watch a video to learn more about our work in Afghanistan') }</Text>
             </View>
         
-            <TouchableOpacity style={ {marginBottom: 20} } onPress={ () => { this.setState({ modalVisibility: true }) } }>
-              <Card style={{ width: width-40, height:200, borderRadius: 5, marginTop: 10 }}>
-                <Image source={require('../assets/images/home/learn_more.png')} style={{ flex:1, height:null, width:null, resizeMode: 'cover', borderRadius: 5 }} ></Image>
+            <TouchableOpacity style={ {marginBottom: 10} } onPress={ () => { this.setState({ modalVisibility: true }) } }>
+              <Card style={{ width: width-40, height:200, marginLeft:5, borderRadius: 5, marginTop: 10, marginBottom: 20, backgroundColor: '#fff',shadowOpacity: 0.5 }}>
+                <Image source={require('../assets/images/home/learn_more.png')} style={{ flex:1 ,height:null, width:null, resizeMode: 'cover', borderRadius: 5 }} ></Image>
               </Card>
             </TouchableOpacity>
 

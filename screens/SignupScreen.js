@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   Alert, AsyncStorage, Linking
 } from 'react-native';
-import {Updates} from "expo";
+import * as Updates from 'expo-updates';
 import Setting from "../constants/Setting";
 
 export default class SignupScreen extends Component {
@@ -38,7 +38,7 @@ export default class SignupScreen extends Component {
   {
     try {
       AsyncStorage.setItem('loginState', state);
-      Updates.reload();
+      Updates.reloadAsync();
     } catch (error) {
       console.log(error);
     }
@@ -186,9 +186,9 @@ export default class SignupScreen extends Component {
             behavior={Platform.OS == "ios" ? "padding" : "height"}
             style={styles.container} >
 
-          <View style={styles.skipButton}>
-            <Button color={'#333'} title={t("Skip")} onPress={() => { this.setLoginStatus('skipped') }} />
-          </View>
+          <TouchableOpacity style={styles.skipButton} onPress={() => { this.setLoginStatus('skipped') }}>
+            <Text style={{ color: '#fff', marginRight:10 }}> {t('Skip')} </Text>
+          </TouchableOpacity>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.inner}>
 

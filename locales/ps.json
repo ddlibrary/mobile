@@ -134,8 +134,8 @@
     "for guidance on licensing this resource.": "د هدایت په دې سرچینو د جواز لپاره",
     "If there is no Creative Commons License on the resource, select one these:": "که چیرې د لیکوالۍ کوم جواز (کرییټو کامنز) موجود نه وي، له دې څخه یو وټاکئ.",
     "Published?": "نشر شود؟",
-    "Yes": "بلی",
-    "No": "نخیر",
+    "Yes": "اوه",
+    "No": "نه",
 
     "Contact Us": "موږ سره اړیکه ونیسئ",
     "Full Name": "بشپړ نوم",
@@ -174,6 +174,11 @@
     "Resource successfully added! It will be published after review.": "سرچینه په بریالۍ توګه زیاته شو. دا د وروسته له کتنې خپره شې.",
 
     "Want to schedule a demo of the DD Library at your school, college or institution? Send us a request using this form.":"آیا تاسې غواړئ چې ستاسو ښوونځي یا انسټیټوټ ته درخت دانش کتابتون معرفی کړو؟ کین لاس کې د اړیکو فورمه بشپړه کړئ، او موږ سره معلومات شریک کړئ.",
-    "We received your message and will contact you back soon!":"موږ ستاسو پیام ترلاسه کړ او ژر به تاسو سره اړیکه ونیسو."
+    "We received your message and will contact you back soon!":"موږ ستاسو پیام ترلاسه کړ او ژر به تاسو سره اړیکه ونیسو.",
+        "No Comment": "هیڅ تبصره نشته",
+        "You are signed in as ": "آیا تاسی غواری له حساب نه ",
+        ", do you want to logout?": "، ووځی؟",
+        "You are not signed in to any account!": "تاسو هیڅ حساب ته ننوتل نه یاست!",
+        "Close": "بند کړه"
 }
 }
