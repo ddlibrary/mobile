@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { withTranslation } from 'react-i18next';
-import { AsyncStorage, ActivityIndicator, View } from 'react-native';
-
+import { ActivityIndicator, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import AuthStackNavigator from './AuthStackNavigator';
 import MainTabNavigator from './MainTabNavigator';
 

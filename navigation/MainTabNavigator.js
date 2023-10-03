@@ -1,12 +1,12 @@
 import * as React from 'react';
-import {Alert, AsyncStorage, Linking, Platform, TouchableOpacity} from 'react-native';
+import {Alert, Dimensions, Platform, TouchableOpacity} from 'react-native';
 import { Text, View, SafeAreaView, ScrollView, Image } from 'react-native';
 import {createAppContainer} from 'react-navigation';
-import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
+import { createDrawerNavigator, DrawerItems } from '@avadon/react-navigation-drawer';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { Ionicons } from '@expo/vector-icons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
@@ -26,6 +26,8 @@ import AuthStackNavigator from './AuthStackNavigator';
 import SignupScreen from "../screens/SignupScreen";
 import {t} from "i18next";
 import * as Updates from "expo-updates";
+const {height, width} = Dimensions.get('window');
+
 
 
 const CustomDrawerComponent = (props) => (
@@ -35,13 +37,16 @@ const CustomDrawerComponent = (props) => (
         <Image source={ require('../assets/images/logo.png') }></Image>
       </View>
       <DrawerItems { ...props } style={{ writingDirection: 'rtl', textAlign: 'right' }} labelStyle={{ textAlign: 'right' }} />
-        <TouchableOpacity onPress={ Feed }><Text style={{ color:'#222' , textAlign: 'left', fontWeight: 'bold',  marginLeft: 16, marginTop: 8}}> {t('Log Out')} </Text></TouchableOpacity>
+        <TouchableOpacity onPress={ Login }><Text style={{ color:'#222' , textAlign: 'left', fontWeight: 'bold',  marginLeft: 14, marginTop: 8}}> {t('Sign In') +'/'+ t('Register')} </Text></TouchableOpacity>
+        <TouchableOpacity onPress={ Logout }><Text style={{ color:'#222' , textAlign: 'left', fontWeight: 'bold',  marginLeft: 14, marginTop: 24}}> {t('Log Out')} </Text></TouchableOpacity>
     </SafeAreaView>
-    <View style={{ flex: 1, marginTop: 250 }}>
-      <Text style={{ textAlign: 'center' }}>
-        DDL APP VERSION 1.0 {'\n'} COPYRIGHT &copy; Darakht-e Danesh
-      </Text>
-    </View>
+   <View>
+       <View style={{height: height-520}}>
+           <Text style={{ textAlign: 'center', position: 'absolute', bottom:0, left:30 }}>
+               DDL APP VERSION 1.0 {'\n'} COPYRIGHT &copy; Darakht-e Danesh
+           </Text>
+       </View>
+   </View>
 
   </ScrollView>
 )
@@ -53,7 +58,7 @@ const config = Platform.select({
       return {
         headerTitleStyle: {
           color: '#000',
-            maxWidth: 280,
+            maxWidth: width-80,
         },
         headerStyle:{
           backgroundColor: '#FFA800',
@@ -271,8 +276,8 @@ const LoginStack = createStackNavigator(
             screen: SignupScreen,
         }
     },{
-    headerMode: 'none',
-}
+        headerMode: 'none',
+    }
 );
 
 
@@ -281,14 +286,12 @@ LoginStack.navigationOptions = ({ screenProps: { t } }) => ({
 });
 
 
-function Feed() {
+
+function Login() {
     AsyncStorage.getItem('loginState').then( async (data) => {
         if (data === 'skipped') {
-            Alert.alert(
-                t("Log Out"),
-                t("You are not signed in to any account!"),
-                [{ text: t("Close"), onPress: () => {} }]
-            );
+            await AsyncStorage.removeItem('loginState');
+            await Updates.reloadAsync();
         }
         if (data === 'signedIn') {
             AsyncStorage.getItem('user').then( async (user) => {
@@ -309,7 +312,34 @@ function Feed() {
 
 }
 
-LoginStack.path = '';
+function Logout() {
+    AsyncStorage.getItem('loginState').then( async (data) => {
+        if (data === 'skipped') {
+            Alert.alert(
+                t("Log Out"),
+                t("You are not signed in to any account!"),
+                [{ text: t("Close"), onPress: () => {} }]
+            );
+
+        }
+        if (data === 'signedIn') {
+            AsyncStorage.getItem('user').then( async (user) => {
+                Alert.alert(
+                    t("Log Out"),
+                    t("You are signed in as ")+user+ t(', do you want to logout?'),
+                    [{ text: t("Yes"), onPress: async () => {
+                            await AsyncStorage.removeItem('user');
+                            await AsyncStorage.removeItem('token');
+                            await AsyncStorage.removeItem('loginState');
+                            await Updates.reloadAsync();
+                        } },
+                        { text: t("No"), onPress: () => {} }]
+                );
+            })
+        }
+    } )
+
+}
 
 
 const tabNavigator = createBottomTabNavigator({ 
@@ -344,8 +374,7 @@ const Drawer = createDrawerNavigator({
   DownloadsStack,
   LinksStack,
   NewsStack,
-  SettingsStack,
-  LoginStack,
+  SettingsStack
 },{
   contentComponent: CustomDrawerComponent,
   //drawerPosition: (Setting.language != 'en') ? 'right' : 'left',

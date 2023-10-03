@@ -8,13 +8,13 @@
       "android",
       "web"
     ],
-    "version": "2.0.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#eee"
+      "backgroundColor": "#FFA800"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,12 +23,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cw4wafghan.ddlapp",
+      "buildNumber": "4"
     },
     "android": {
       "permissions": [],
       "package": "com.cw4wafghan.ddlapp",
-      "versionCode": 2
+      "versionCode": 5
     },
     "description": "",
     "primaryColor": "#FFA800",

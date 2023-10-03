@@ -1,63 +1,95 @@
-import React from 'react';
-import { StyleSheet, ActivityIndicator, Text, View, RefreshControl, AsyncStorage } from 'react-native';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import {
+  StyleSheet,
+  ActivityIndicator,
+  Text,
+  View,
+  RefreshControl,
+} from "react-native";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
+import { Ionicons } from "@expo/vector-icons";
 
-import Setting from '../constants/Setting';
-import LinkView from "./activities/links/LinkView";
+import Setting from "../constants/Setting";
 import NewsView from "./activities/news/NewsView";
 
 export default class NewsScreen extends React.Component {
-
   state = {
     isLoading: true,
     refreshing: false,
-    text: 'loading',
-    data: ''
+    text: "loading",
+    data: "",
+  };
+
+  componentDidMount() {
+    this.getData();
   }
 
-  componentDidMount(){
-    this.getData()
-  }
-
-  getData = async() => {
+  getData = async () => {
     await fetch(Setting.newsApi + this.props.screenProps.i18n.language)
-    .then(data => data.json())
-    .then(res => {
-      this.setState({
-        data: res.data,
-        isLoading: false
+      .then((data) => data.json())
+      .then((res) => {
+        this.setState({
+          data: res.data,
+          isLoading: false,
+        });
       });
-    })
-  }
-
+  };
 
   render() {
     const { navigate } = this.props.navigation;
-    if(this.state.isLoading){
-      return(
-        <View style={{ flex: 1, alignItems: 'center', padding:0, paddingTop: 15 }}>
-          <ActivityIndicator animating size={'small'} />
+    if (this.state.isLoading) {
+      return (
+        <View
+          style={{ flex: 1, alignItems: "center", padding: 0, paddingTop: 15 }}
+        >
+          <ActivityIndicator animating size={"small"} />
         </View>
-      )
+      );
     }
 
     let _renderItem = ({ item }) => (
       <View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.option}
-          onPress={ () => {  navigate('NewsView', item);
+          onPress={() => {
+            navigate("NewsView", item);
             NewsView.navigationOptions = {
-            title: item.title,
-          }; }}>
-
-          <View style={{ flexDirection: (this.props.screenProps.i18n.language != 'en') ? 'row-reverse' : 'row' }}>
+              title: item.title,
+            };
+          }}
+        >
+          <View
+            style={{
+              flexDirection:
+                this.props.screenProps.i18n.language != "en"
+                  ? "row-reverse"
+                  : "row",
+            }}
+          >
             <View style={styles.optionIconContainer}>
               <Ionicons name="newspaper" size={22} color="#ccc" />
             </View>
-            <View style={styles.optionTextContainer}>
-              <Text style={styles.optionText}> 
-                { ((item.title.length >= 50) ? item.title.substr(0, 50) + ' ... ' : item.title) } 
+            <View
+              style={{
+                marginRight:
+                  this.props.screenProps.i18n.language == "en" ? 40 : 0,
+              }}
+            >
+              <Text
+                style={{
+                  writingDirection:
+                    this.props.screenProps.i18n.language != "en"
+                      ? "rtl"
+                      : "ltr",
+                  fontSize: 15,
+                  marginTop: 1,
+                  marginLeft:
+                    this.props.screenProps.i18n.language != "en" ? 40 : 0,
+                }}
+              >
+                {item.title.length >= 100
+                  ? item.title.slice(0, 80) + " ... "
+                  : item.title}
               </Text>
             </View>
           </View>
@@ -65,33 +97,33 @@ export default class NewsScreen extends React.Component {
       </View>
     );
 
-
-    return(
-        <FlatList
-          data={this.state.data}
-          keyExtractor={ (item, index) => index.toString() }
-          renderItem={ _renderItem }
-          refreshControl={ 
-            <RefreshControl 
-              refreshing={ this.state.refreshing } 
-              onRefresh={ () => { this.getData() } }
-            /> 
-          }
-        />
-    )
+    return (
+      <FlatList
+        data={this.state.data}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={_renderItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={() => {
+              this.getData();
+            }}
+          />
+        }
+      />
+    );
   }
 }
 
-
 NewsScreen.navigationOptions = ({ screenProps: { t } }) => ({
-  title: t('news'),
+  title: t("news"),
 });
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   optionsTitleText: {
     fontSize: 16,
@@ -104,11 +136,11 @@ const styles = StyleSheet.create({
     marginLeft: 9,
   },
   option: {
-    backgroundColor: '#fdfdfd',
+    backgroundColor: "#fdfdfd",
     paddingHorizontal: 15,
     paddingVertical: 15,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
   },
   optionText: {
     fontSize: 15,
